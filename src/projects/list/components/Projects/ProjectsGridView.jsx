@@ -7,8 +7,9 @@ import ProjectListProjectColHeader from './ProjectListProjectColHeader'
 import GridView from '../../../../components/Grid/GridView'
 
 import UserWithName from '../../../../components/User/UserWithName'
+import AvatarGroup from '../../../../components/AvatarGroup/AvatarGroup'
 import { findCategory } from '../../../../config/projectWizard'
-import { PROJECT_STATUS } from '../../../../config/constants'
+import { PROJECT_STATUS, PROJECT_ROLE_COPILOT, PROJECT_ROLE_MANAGER } from '../../../../config/constants'
 
 require('./ProjectsGridView.scss')
 
@@ -71,16 +72,17 @@ const ProjectsGridView = props => {
         )
       }
     }, {
-      id: 'status',
-      headerLabel: 'Status',
-      sortable: true,
-      classes: 'item-status width9',
+      id: 'customer',
+      headerLabel: 'Customer',
+      sortable: false,
+      classes: 'item-customer width12',
       renderText: item => {
-        const s = PROJECT_STATUS.filter((opt) => opt.value === item.status)[0]
-        const classes = `txt-status ${s.color}`
+        const m = _.find(item.members, m => m.isPrimary && m.role === 'customer')
+        if (!m)
+          return <div className="user-block txt-italic">Unknown</div>
         return (
           <div className="spacing">
-            <span className={classes}>{s.name}</span>
+            <UserWithName {...m} showLevel={false} />
           </div>
         )
       }
@@ -100,67 +102,31 @@ const ProjectsGridView = props => {
         )
       }
     }, {
-      id: 'customer',
-      headerLabel: 'Customer',
-      sortable: false,
-      classes: 'item-customer width12',
-      renderText: item => {
-        const m = _.find(item.members, m => m.isPrimary && m.role === 'customer')
-        if (!m)
-          return <div className="user-block txt-italic">Unknown</div>
-        return (
-          <div className="spacing">
-            <UserWithName {...m} showLevel={false} />
-          </div>
-        )
-      }
-    }, {
-      id: 'copilot',
-      headerLabel: 'Copilot',
+      id: 'managers',
+      headerLabel: 'Managers',
       sortable: false,
       classes: 'item-copilot width11',
       renderText: item => {
-        const m = _.find(item.members, m => m.isPrimary && m.role === 'copilot')
-        const rating = _.get(m, 'maxRating.rating', 0)
-        if (!m)
+        const managers = _.filter(item.members, m => (m.role === PROJECT_ROLE_MANAGER || m.role === PROJECT_ROLE_COPILOT))
+        if (!managers)
           return <div className="user-block txt-italic">Unclaimed</div>
         return (
           <div className="spacing">
-            <UserWithName {...m} rating={rating} showLevel={false} />
+            <AvatarGroup users={managers} />
           </div>
         )
       }
     }, {
-      id: 'price',
-      headerLabel: 'Price',
-      sortable: false,
-      classes: 'item-price width7',
+      id: 'status',
+      headerLabel: 'Status',
+      sortable: true,
+      classes: 'item-status width9',
       renderText: item => {
-        let desc = ''
-        let price = null
-        switch (item.status) {
-        case 'active':
-          desc = 'Pending'
-          break
-        case 'in_review':
-          price = item.estimatedPrice || null
-          desc = 'Estimated'
-          break
-        case 'reviewed':
-          price = item.estimatedPrice || null
-          desc = 'Quoted'
-          break
-        case 'completed':
-          desc = 'Paid'
-          price = item.actualPrice || null
-          break
-        }
-        // if (price)
-        //   price = price.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')
+        const s = PROJECT_STATUS.filter((opt) => opt.value === item.status)[0]
+        const classes = `txt-status ${s.color}`
         return (
           <div className="spacing">
-            { price ? <span className="txt-price yellow-light">$ {price}</span> : <noscript /> }
-            <span className="txt-gray-sm">{desc}</span>
+            <span className={classes}>{s.name}</span>
           </div>
         )
       }

@@ -15,7 +15,7 @@ const ProjectListProjectColHeader = ({currentSortField, sortHandler}) => {
 
   return (
     <div>
-      <span className="txt txt-black">Projects</span>
+      <span className="txt txt-black">Project</span>
       <Dropdown className="drop-down">
         <a href="javascript:;" className="dropdown-menu-header txt-link">{cur.label}</a>
         <div className="dropdown-menu-list down-layer">
