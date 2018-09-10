@@ -317,16 +317,23 @@ class EditStageForm extends React.Component {
                     </div>
                   </Tooltip>
                 ) : (
-                  <div styleName="input-row">
-                    <label className="tc-label">Status</label>
-                    <SelectDropdown
-                      name="status"
-                      value={selectedPhaseStatus}
-                      theme="default"
-                      options={activePhaseStatuses}
-                      disabled={hasTimeline && phase.status === PHASE_STATUS_ACTIVE}
-                    />
-                  </div>
+                  <Tooltip theme="light" tooltipDelay={TOOLTIP_DEFAULT_DELAY}>
+                    <div className="tooltip-target">
+                      <div styleName="input-row">
+                        <label className="tc-label">Status</label>
+                        <SelectDropdown
+                          name="status"
+                          value={selectedPhaseStatus}
+                          theme="default"
+                          options={activePhaseStatuses}
+                          disabled={hasTimeline && phase.status === PHASE_STATUS_ACTIVE}
+                        />
+                      </div>
+                    </div>
+                    <div className="tooltip-body">
+                      Phase delivery status is controlled by the statuses of individual milestones
+                    </div>
+                  </Tooltip>
                 )}
 
                 <TCFormFields.TextInput
